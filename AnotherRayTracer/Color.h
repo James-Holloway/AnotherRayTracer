@@ -10,7 +10,9 @@ struct Color
     Color operator+(Color other) const;
     Color operator-(Color other) const;
     Color operator*(Color other) const;
+    Color operator*(double scalar) const;
     Color operator/(Color other) const;
+    Color operator/(double scalar) const;
 
     void ToBytes(unsigned char& red, unsigned char& green, unsigned char& blue) const;
 };

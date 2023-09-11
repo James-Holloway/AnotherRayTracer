@@ -17,9 +17,19 @@ Color Color::operator*(Color other) const
     return Color(r * other.r, g * other.g, b * other.b);
 }
 
+Color Color::operator*(double scalar) const
+{
+    return Color(r * scalar, g * scalar, b * scalar);
+}
+
 Color Color::operator/(Color other) const
 {
     return Color(r / other.r, g / other.g, b / other.b);
+}
+
+Color Color::operator/(double scalar) const
+{
+    return Color(r / scalar, g / scalar, b / scalar);
 }
 
 void Color::ToBytes(unsigned char& red, unsigned char& green, unsigned char& blue) const

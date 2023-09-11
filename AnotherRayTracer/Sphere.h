@@ -10,5 +10,6 @@ struct Sphere : public Shape
     double radius;
 
     virtual std::vector<double> Intersects(Ray ray) override;
+    virtual Vector3D GetNormal(Vector3D point) override;
 };
 

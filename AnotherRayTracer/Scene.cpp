@@ -41,8 +41,15 @@ Color Scene::Trace(unsigned int x, unsigned int y)
     // Get first intersection
     auto intersected = intersections.begin();
 
-    // TODO use a material struct
-    return intersected->second->color;
+    double distance = intersected->first;
+
+    Vector3D point = ray.GetPointFromDistance(distance);
+
+    std::shared_ptr<Shape> shape = intersected->second;
+
+    Color color = shape->GetColor(point, lights);
+
+    return color;
 }
 
 void Scene::TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize)

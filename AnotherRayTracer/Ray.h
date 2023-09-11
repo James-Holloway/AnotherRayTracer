@@ -7,5 +7,7 @@ struct Ray
 
     Vector3D start;
     Vector3D direction;
+
+    Vector3D GetPointFromDistance(double distance);
 };
 

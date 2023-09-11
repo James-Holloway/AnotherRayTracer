@@ -7,8 +7,9 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
 * main : wxApp - Used to start the wxWidgets program
 * AnotherMainWindow : wxFrame - Used to display the rendered scene
 * AnotherRayTracer - Holds a Scene and output image, along with functions to render the scene
-* Scene - The scene, containing a background color, a camera, the size of the render and the shapes to be drawn.
-* Shape/Sphere - Basic shapes that the ray tracer will hit when tracing the scene. Each shape holds a color
+* Scene - The scene, containing a background color, a camera, the size of the render and the shapes to be drawn
+* Shape/Sphere - Basic shapes that the ray tracer will hit when tracing the scene. Has functions that can be overridden in derived Shapes and a material
+* Material - Each shape has a material which contains a color
 * Color - The color of the shape or background. Stored in float format
 * Ray - The ray, a simple struct that contains the start position and direction of the ray which makes the ray tracer possible
 * Vector3D - Another important part of ART, a vector in 3D space with overloaded operators to match

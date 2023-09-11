@@ -10,6 +10,7 @@
 #include "Color.h"
 #include "Shape.h"
 #include "Sphere.h"
+#include "Light.h"
 
 struct Scene
 {
@@ -20,6 +21,7 @@ struct Scene
     unsigned int height = 512;
 
     std::vector<std::shared_ptr<Shape>> shapes{};
+    std::vector<std::shared_ptr<Light>> lights{};
 
     Color Trace(unsigned int x, unsigned int y);
     void TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize);

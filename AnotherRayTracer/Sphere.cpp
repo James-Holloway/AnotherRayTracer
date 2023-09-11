@@ -23,3 +23,8 @@ std::vector<double> Sphere::Intersects(Ray ray)
     double root = sqrt(discriminant);
     return { (-b - root) / 2.0, (-b + root) / 2.0 };
 }
+
+Vector3D Sphere::GetNormal(Vector3D point)
+{
+    return (point - center).Normalized();
+}

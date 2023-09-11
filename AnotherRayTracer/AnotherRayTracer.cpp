@@ -15,8 +15,11 @@ void AnotherRayTracer::PopulateExample()
 {
     scene.camera.LookAt(Vector3D(0, 2, -8), Vector3D(0, 0, 0));
     scene.shapes.clear();
+    scene.lights.clear();
     
     scene.shapes.push_back(std::make_shared<Sphere>(Vector3D(-2, 0, 2), 1.0, Color(1, 0, 0)));
     scene.shapes.push_back(std::make_shared<Sphere>(Vector3D(0, 0, 0), 1.0, Color(0, 1, 0)));
     scene.shapes.push_back(std::make_shared<Sphere>(Vector3D(2, 0, 2), 1.0, Color(0, 0, 1)));
+
+    scene.lights.push_back(std::make_shared<Light>(Vector3D(5, 10, -5), CWhite));
 }
