@@ -1,0 +1,19 @@
+# Background
+color cornflowerblue 100 149 237
+background cornflowerblue
+# Camera
+camera 0 2 -8 0 0 0
+# Colors & Materials
+color white 255 255 255
+color red 255 0 0
+color green 0 255 0
+color blue 0 0 255
+material red red
+material green green
+material blue blue
+# Spheres
+sphere -2 0 2 1.0 red
+sphere 0 0 0 1.0 green
+sphere 2 0 2 1.0 blue
+# Lights
+light 5 10 -5 white

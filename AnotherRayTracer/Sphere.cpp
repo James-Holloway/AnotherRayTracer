@@ -2,6 +2,8 @@
 
 Sphere::Sphere(Vector3D _center, double _radius, Color _color) : center(_center), radius(_radius), Shape(_color) {}
 
+Sphere::Sphere(Vector3D _center, double _radius, Material _material) : center(_center), radius(_radius), Shape(_material) {}
+
 std::vector<double> Sphere::Intersects(Ray ray)
 {
     // Offset - the position of the sphere relative to the start of the ray

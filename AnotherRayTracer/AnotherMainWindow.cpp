@@ -32,6 +32,8 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
 
         toolSaveAs = toolBar->AddTool(wxID_SAVEAS, wxEmptyString, wxueBundleSVG(wxue_img::save_as_svg, 332, 673, wxSize(16, 16)), "Save Scene As...");
 
+        toolValidate = toolBar->AddTool(ID_VALIDATE, wxEmptyString, wxueBundleSVG(wxue_img::check_svg, 149, 205, wxSize(16, 16)), "Validate");
+
         toolBar->AddSeparator();
 
         // Render operations
@@ -55,7 +57,8 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         menuFile->Append(wxID_NEW, "&New Scene");
         menuFile->Append(ID_LOAD, "&Load Scene...");
         menuFile->Append(wxID_SAVE, "&Save Scene");
-        menuFile->Append(wxID_SAVEAS, "&Save Scene As...");
+        menuFile->Append(wxID_SAVEAS, "Save Scene &As...");
+        menuFile->Append(ID_VALIDATE, "&Validate");
         menuFile->AppendSeparator();
         menuFile->Append(wxID_EXIT, "E&xit");
         menuBar->Append(menuFile, "&File");
@@ -76,20 +79,25 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
     splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3DSASH);
     splitter->SetSashGravity(0.0);
     splitter->SetMinimumPaneSize(150);
-    splitter->SetSplitMode(wxSPLIT_VERTICAL);
-    splitter->SetAutoLayout(true);
 
-    // Text box
+    // Text side
     {
-        sceneTextBox = new wxTextCtrl(splitter, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+        splitterText = new wxSplitterWindow(splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3DSASH);
+        splitterText->SetSashGravity(1.0);
+        splitterText->SetMinimumPaneSize(150);
+
+        sceneTextBox = new wxTextCtrl(splitterText, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+        sceneErrors = new wxTextCtrl(splitterText, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+        sceneErrors->Disable();
+
+        splitterText->SplitHorizontally(sceneTextBox, sceneErrors, 400);
     }
     // Image
     {
         imagePanel = new wxImagePanel(splitter, wxID_ANY);
     }
 
-    splitter->SplitVertically(sceneTextBox, imagePanel, 200);
-
+    splitter->SplitVertically(splitterText, imagePanel, 200);
 
     Centre(wxBOTH);
     
@@ -100,6 +108,7 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         Bind(wxEVT_MENU, &AnotherMainWindow::OnLoadScene, this, ID_LOAD);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnSaveScene, this, wxID_SAVE);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnSaveSceneAs, this, wxID_SAVEAS);
+        Bind(wxEVT_MENU, &AnotherMainWindow::OnValidate, this, ID_VALIDATE);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnRunRender, this, ID_RENDER_START);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnPauseRender, this, ID_RENDER_PAUSE);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnStopRender, this, ID_RENDER_STOP);
@@ -120,6 +129,8 @@ void AnotherMainWindow::OnExit(wxCommandEvent& event)
 void AnotherMainWindow::OnNewScene(wxCommandEvent& event)
 {
     SetStatusText("Created New Scene");
+    sceneTextBox->SetValue(wxString(AnotherRayTracer::NewScene));
+    sceneErrors->SetValue("New Scene created. Press Validate or Run to check for errors");
 }
 
 void AnotherMainWindow::OnLoadScene(wxCommandEvent& event)
@@ -135,6 +146,12 @@ void AnotherMainWindow::OnSaveScene(wxCommandEvent& event)
 void AnotherMainWindow::OnSaveSceneAs(wxCommandEvent& event)
 {
     SetStatusText("Scene Saved As");
+}
+
+void AnotherMainWindow::OnValidate(wxCommandEvent& event)
+{
+    SetStatusText("Validating");
+    ParseART();
 }
 
 void AnotherMainWindow::OnRunRender(wxCommandEvent& event)
@@ -162,8 +179,15 @@ void AnotherMainWindow::OnRestartRender(wxCommandEvent& event)
     SetStatusText("Render Restarted");
 }
 
+void AnotherMainWindow::ParseART()
+{
+    std::string errors = anotherRayTracer->Parse(sceneTextBox->GetValue().ToStdString());
+    sceneErrors->SetValue(wxString(errors));
+}
+
 void AnotherMainWindow::RunRender()
 {
+    ParseART();
     wxSize size = imagePanel->GetSize();
     anotherRayTracer->Resize(size.x, size.y);
     anotherRayTracer->Render();
@@ -177,6 +201,14 @@ void AnotherMainWindow::RunRender()
 #pragma region Embedded SVG Images
 namespace wxue_img
 {
+    // check.svg
+    const unsigned char check_svg[149]{
+        120,218,93,143,75,14,194,48,12,68,57,138,21,214,184,216,73,99,71,106,122,130,112,1,118,136,22,168,20,65,197,167,231,39,97,129,
+        4,242,234,89,51,154,153,238,177,156,251,110,62,60,47,112,154,114,222,220,95,121,140,102,92,198,235,109,24,12,28,243,52,255,255,
+        134,104,118,228,208,89,82,176,104,217,114,106,49,120,146,22,232,203,36,180,117,149,89,197,37,66,229,202,138,45,21,100,244,54,216,
+        0,130,193,177,215,34,47,110,102,32,70,82,150,84,108,222,171,64,209,137,87,77,191,105,123,243,169,26,205,218,113,61,211,244,93,
+        83,103,172,222,60,102,50,103
+    };
     // debug-pause.svg
     const unsigned char debug_pause_svg[96]{
         120,218,179,41,46,75,183,179,41,72,44,201,80,72,177,85,242,53,209,51,53,48,48,50,81,48,210,179,180,180,180,176,240,49,211,51,64,

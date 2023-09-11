@@ -14,7 +14,7 @@
 
 struct Scene
 {
-    Color background{ 0.392f, 0.584f, 0.929 }; // Cornflower blue
+    Color background = CCornflowerBlue;
     Camera camera{};
 
     unsigned int width = 512;
@@ -22,6 +22,8 @@ struct Scene
 
     std::vector<std::shared_ptr<Shape>> shapes{};
     std::vector<std::shared_ptr<Light>> lights{};
+
+    void Reset();
 
     Color Trace(unsigned int x, unsigned int y);
     void TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize);

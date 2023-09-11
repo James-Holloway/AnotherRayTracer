@@ -5,6 +5,7 @@
 struct Sphere : public Shape
 {
     Sphere(Vector3D _center, double _radius, Color _color = CBlack);
+    Sphere(Vector3D _center, double _radius, Material _material);
 
     Vector3D center;
     double radius;

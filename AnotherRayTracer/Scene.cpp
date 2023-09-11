@@ -2,6 +2,15 @@
 
 #define SINGLETHREADED
 
+void Scene::Reset()
+{
+    shapes.clear();
+    lights.clear();
+    camera.LookAt(Vector3D(0, 0, -5), Vector3D(0, 0, 0));
+    camera.scale = 0.5;
+    background = CBlack;
+}
+
 Color Scene::Trace(unsigned int x, unsigned int y)
 {
     // Remap [0,width] & [0,height] to [-1,+1]
@@ -58,7 +67,7 @@ void Scene::TraceBatch(std::vector<unsigned char>* image, unsigned int offset, u
     for (unsigned int i = offset; i < offset + batchSize; i++)
     {
         unsigned int x = i % width;
-        unsigned int y = floor(i / width);
+        unsigned int y = (unsigned int)floor(i / width);
 
         if (j >= batchSize * 3)
             break;

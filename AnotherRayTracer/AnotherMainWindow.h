@@ -33,12 +33,15 @@ protected:
     wxToolBarToolBase* toolNew;
     wxToolBarToolBase* toolPause;
     wxToolBarToolBase* toolRestart;
+    wxToolBarToolBase* toolValidate;
     wxToolBarToolBase* toolRun;
     wxToolBarToolBase* toolSave;
     wxToolBarToolBase* toolSaveAs;
     wxToolBarToolBase* toolStop;
     wxSplitterWindow* splitter;
+    wxSplitterWindow* splitterText;
     wxTextCtrl* sceneTextBox;
+    wxTextCtrl* sceneErrors;
     wxImagePanel* imagePanel;
 
 protected:
@@ -47,11 +50,13 @@ protected:
     void OnLoadScene(wxCommandEvent& event);
     void OnSaveScene(wxCommandEvent& event);
     void OnSaveSceneAs(wxCommandEvent& event);
+    void OnValidate(wxCommandEvent& event);
     void OnRunRender(wxCommandEvent& event);
     void OnPauseRender(wxCommandEvent& event);
     void OnStopRender(wxCommandEvent& event);
     void OnRestartRender(wxCommandEvent& event);
 
+    void ParseART();
     void RunRender();
 
 protected:
@@ -60,6 +65,7 @@ protected:
 
 enum {
     ID_LOAD,
+    ID_VALIDATE,
     ID_RENDER_START,
     ID_RENDER_PAUSE,
     ID_RENDER_STOP,
@@ -70,6 +76,8 @@ namespace wxue_img
 {
     // Images declared in this class module:
 
+    // check.svg
+    extern const unsigned char check_svg[149];
     // debug-pause.svg
     extern const unsigned char debug_pause_svg[96];
     // debug-restart.svg
@@ -84,5 +92,6 @@ namespace wxue_img
     extern const unsigned char new_file_svg[273];
     // save-as.svg
     extern const unsigned char save_as_svg[332];
+    // save.png
     extern const unsigned char save_svg[178];
 }
