@@ -22,6 +22,6 @@ struct Scene
     std::vector<std::shared_ptr<Shape>> shapes{};
 
     Color Trace(unsigned int x, unsigned int y);
-    void TraceBatch(std::vector<unsigned char>& image, unsigned int offset, unsigned int batchSize);
+    void TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize);
     std::vector<unsigned char> TraceScene();
 };
