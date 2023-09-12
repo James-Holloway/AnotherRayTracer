@@ -6,3 +6,9 @@ Vector3D Ray::GetPointFromDistance(double distance)
 {
     return start + (direction * distance);
 }
+
+Vector3D Ray::Reflect(Vector3D normal)
+{
+    Vector3D inverse = normal.Inverted();
+    return (inverse + (normal * normal.Dot(inverse)) + direction) * 2.0;
+}

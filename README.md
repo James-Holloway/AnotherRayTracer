@@ -10,9 +10,10 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
   * Creates a color that can be used by other functions, can only be used after declaration
   * R, G, B can be 0.0-1.0 or 0-255
   * Example: `color cornflowerblue 100 149 237`
-* `material <color>`
+* `material <color> [diffuse] [specular]`
   * `<color>` is the color name
-  * Example: `color myMaterial cornflowerblue`
+  * `[diffuse]` and `[specular]` are optional parameters
+  * Example: `color myMaterial cornflowerblue 0.75 0.25`
 * `background <color>`
   * Sets the background color of the scene
   * Example: `background cornflowerblue`
@@ -37,8 +38,8 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
 * AnotherMainWindow : wxFrame - Used to display the rendered scene
 * AnotherRayTracer - Holds a Scene and output image, along with functions to render the scene
 * Scene - The scene, containing a background color, a camera, the size of the render and the shapes to be drawn
-* Shape/Sphere - Basic shapes that the ray tracer will hit when tracing the scene. Has functions that can be overridden in derived Shapes and a material
-* Material - Each shape has a material which contains a color
+* Shape/Sphere/Plane - Basic shapes that the ray tracer will hit when tracing the scene. Has functions that can be overridden in derived Shapes and a material
+* Material - Each shape has a material which contains a color, diffuse and specular
 * Color - The color of the shape or background. Stored in double format
 * Ray - The ray, a simple struct that contains the start position and direction of the ray which makes the ray tracer possible
 * Vector3D - Another important part of ART, a vector in 3D space with overloaded operators to match

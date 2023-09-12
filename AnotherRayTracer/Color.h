@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+
 struct Color
 {
     Color(double _r = 0, double _g = 0, double _b = 0);

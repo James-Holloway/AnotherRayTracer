@@ -17,6 +17,6 @@ struct Shape
 
     virtual std::vector<double> Intersects(Ray ray);
     virtual Vector3D GetNormal(Vector3D point);
-    virtual Color GetColor(Vector3D point, Scene* scene);
+    virtual Color GetColor(Vector3D point, Ray ray, Scene* scene);
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Vector3D.h"
 #include "Material.h"
 #include "Color.h"
@@ -11,6 +12,6 @@ struct Light
     Vector3D position;
     Color color;
 
-    Color Illuminate(Material material, Vector3D point, double brightness);
+    Color Illuminate(Material material, Vector3D point, double brightness, Vector3D normal, Vector3D viewDir);
 };
 

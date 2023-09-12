@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-#define SINGLETHREADED
+// #define SINGLETHREADED
 
 void Scene::Reset()
 {
@@ -62,7 +62,7 @@ Color Scene::Trace(unsigned int x, unsigned int y)
 
     std::shared_ptr<Shape> shape = intersected->second;
 
-    Color color = shape->GetColor(point, this);
+    Color color = shape->GetColor(point, ray, this);
 
     return color;
 }

@@ -135,7 +135,7 @@ void ARTParser::ParseColor(std::vector<std::string> line, Scene& scene, ParsedDa
     data.colors[name] = Color(r, g, b);
 }
 
-// material name color
+// material name color [diffuse] [specular]
 void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, ParsedData& data)
 {
     if (line.size() < 3)
@@ -147,10 +147,40 @@ void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, Parse
     std::string name = line[1];
     std::string colorName = line[2];
 
+    double diffuse = 0.5, specular = 0.5;
+
+    if (line.size() > 4)
+    {
+        try
+        {
+            diffuse = std::stod(line[3]);
+        }
+        catch (std::exception& e)
+        {
+            std::string err = std::string("Error while parsing color's diffuse: ") + e.what();
+            data.CreateError(err);
+            return;
+        }
+
+        if (line.size() > 5)
+        {
+            try
+            {
+                specular = std::stod(line[4]);
+            }
+            catch (std::exception& e)
+            {
+                std::string err = std::string("Error while parsing material's specular: ") + e.what();
+                data.CreateError(err);
+                return;
+            }
+        }
+    }
+
     auto colorIter = data.colors.find(colorName);
     if (colorIter != data.colors.end())
     {
-        data.materials[name] = Material(colorIter->second);
+        data.materials[name] = Material(colorIter->second, diffuse, specular);
     }
     else
     {

@@ -1,0 +1,81 @@
+# Background
+color cornflowerblue 100 149 237
+background cornflowerblue
+
+# Camera
+camera 0 0 -12.5 0 0 0
+
+# Colors
+color white 255 255 255
+color red 255 0 0
+color green 0 255 0
+color blue 0 0 255
+
+# Materials
+# Row 0
+material d0s0 white 0.00 0.00
+material d0s1 white 0.00 0.25
+material d0s2 white 0.00 0.50
+material d0s3 white 0.00 0.75
+material d0s4 white 0.00 1.00
+#Row 1
+material d1s0 white 0.25 0.00
+material d1s1 white 0.25 0.25
+material d1s2 white 0.25 0.50
+material d1s3 white 0.25 0.75
+material d1s4 white 0.25 1.00
+#Row 2
+material d2s0 white 0.50 0.00
+material d2s1 white 0.50 0.25
+material d2s2 white 0.50 0.50
+material d2s3 white 0.50 0.75
+material d2s4 white 0.50 1.00
+#Row 3
+material d3s0 white 0.75 0.00
+material d3s1 white 0.75 0.25
+material d3s2 white 0.75 0.50
+material d3s3 white 0.75 0.75
+material d3s4 white 0.75 1.00
+#Row 4
+material d4s0 white 1.00 0.00
+material d4s1 white 1.00 0.25
+material d4s2 white 1.00 0.50
+material d4s3 white 1.00 0.75
+material d4s4 white 1.00 1.00
+
+# Spheres
+# Row 0
+sphere -5.0 5.0 0 1.0 d0s0
+sphere -2.5 5.0 0 1.0 d0s1
+sphere 0.0 5.0 0 1.0 d0s2
+sphere 2.5 5.0 0 1.0 d0s3
+sphere 5.0 5.0 0 1.0 d0s4
+# Row 1
+sphere -5.0 2.5 0 1.0 d1s0
+sphere -2.5 2.5 0 1.0 d1s1
+sphere 0.0 2.5 0 1.0 d1s2
+sphere 2.5 2.5 0 1.0 d1s3
+sphere 5.0 2.5 0 1.0 d1s4
+# Row 2
+sphere -5.0 0.0 0 1.0 d2s0
+sphere -2.5 0.0 0 1.0 d2s1
+sphere 0.0 0.0 0 1.0 d2s2
+sphere 2.5 0.0 0 1.0 d2s3
+sphere 5.0 0.0 0 1.0 d2s4
+# Row 3
+sphere -5.0 -2.5 0 1.0 d3s0
+sphere -2.5 -2.5 0 1.0 d3s1
+sphere 0.0 -2.5 0 1.0 d3s2
+sphere 2.5 -2.5 0 1.0 d3s3
+sphere 5.0 -2.5 0 1.0 d3s4
+# Row 4
+sphere -5.0 -5.0 0 1.0 d4s0
+sphere -2.5 -5.0 0 1.0 d4s1
+sphere 0.0 -5.0 0 1.0 d4s2
+sphere 2.5 -5.0 0 1.0 d4s3
+sphere 5.0 -5.0 0 1.0 d4s4
+
+# Lights
+light 7.5 0 -15 red
+light 0 7.5 -15 green
+light -7.5 0 -15 blue

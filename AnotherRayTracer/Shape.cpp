@@ -18,16 +18,19 @@ Vector3D Shape::GetNormal(Vector3D point)
     return {};
 }
 
-Color Shape::GetColor(Vector3D point, Scene* scene)
+Color Shape::GetColor(Vector3D point, Ray ray, Scene* scene)
 {
-    Vector3D normal = GetNormal(point);
-    Color color = Color(0, 0, 0);
-
     // If no lights then fullbright
     if (scene->lights.size() == 0)
     {
         return material.GetColor(point);
     }
+
+    Vector3D normal = GetNormal(point);
+    Color color = Color(0, 0, 0);
+    Vector3D reflex = ray.Reflect(normal);
+
+    Vector3D viewDir = ray.direction.Inverted();
 
     for (std::shared_ptr<Light> light : scene->lights)
     {
@@ -40,20 +43,21 @@ Color Shape::GetColor(Vector3D point, Scene* scene)
 
         if (intersections.size() > 0)
         {
-            // If the ray intersected with an object closer to the light than this, then continue
+            // If the ray intersected with an object closer to the light than this, then don't illuminate with this light
             if (intersections.begin()->first <= v.Length())
                 continue;
         }
-
 
         double brightness = normal.Dot(v.Normalized());
 
         if (brightness <= 0)
             continue;
 
-        Color illuminaton = light->Illuminate(material, point, brightness);
+        Color illuminaton = light->Illuminate(material, point, brightness, normal, viewDir);
         color = color + illuminaton;
     }
+
+    color = color + (material.color * ART_AMBIENT);
 
     return color;
 }
