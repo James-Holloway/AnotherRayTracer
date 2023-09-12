@@ -11,6 +11,9 @@
 #include "Shape.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "Plane.h"
+
+constexpr double ART_THRESHOLD = 0.0001;
 
 struct Scene
 {
@@ -24,6 +27,8 @@ struct Scene
     std::vector<std::shared_ptr<Light>> lights{};
 
     void Reset();
+
+    void Intersections(Ray ray, std::map<double, std::shared_ptr<Shape>>& intersections);
 
     Color Trace(unsigned int x, unsigned int y);
     void TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize);

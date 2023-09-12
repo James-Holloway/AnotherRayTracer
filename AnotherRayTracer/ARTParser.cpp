@@ -269,6 +269,55 @@ void ARTParser::ParseLight(std::vector<std::string> line, Scene& scene, ParsedDa
     }
 }
 
+// plane nx ny nz distance color
+void ARTParser::ParsePlane(std::vector<std::string> line, Scene& scene, ParsedData& data)
+{
+    if (line.size() < 6)
+    {
+        data.CreateError("Plane did not have enough values");
+        return;
+    }
+
+    double nx = 0, ny = 0, nz = 0, distance = 0;
+
+    try
+    {
+        nx = std::stod(line[1]);
+        ny = std::stod(line[2]);
+        nz = std::stod(line[3]);
+    }
+    catch (std::exception& e)
+    {
+        std::string err = std::string("Error while parsing plane's normal: ") + e.what();
+        data.CreateError(err);
+        return;
+    }
+
+    try
+    {
+        distance = std::stod(line[4]);
+    }
+    catch (std::exception& e)
+    {
+        std::string err = std::string("Error while parsing plane's distance: ") + e.what();
+        data.CreateError(err);
+        return;
+    }
+
+    std::string matName = line[5];
+
+    auto matIter = data.materials.find(matName);
+    if (matIter != data.materials.end())
+    {
+        scene.shapes.push_back(std::make_shared<Plane>(Vector3D(nx, ny, nz), distance, matIter->second));
+    }
+    else
+    {
+        std::string err = std::string("Could not find existing material of name: ") + matName;
+        data.CreateError(err);
+    }
+}
+
 void ARTParser::ParseLine(std::string line, Scene& scene, ParsedData& data)
 {
     if (line.length() == 0)

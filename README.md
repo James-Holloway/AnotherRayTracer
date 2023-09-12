@@ -22,6 +22,9 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
 * `sphere <x> <y> <z> <radius> <material>`
   * Places a sphere at the x y z position with the specified radius and set material. Note this is a material, not a color. You need to create a material with the specified color
   * Example: `sphere -2 0 2 1.0 myMaterial`
+* `plane <nx> <ny> <nz> <distance> <material>`
+  * Creates a plane with the normal nx ny nz and places it distance away
+  * Example: `plane 0 1 0 -1 myMaterial` creates a plane facing upwards at 0,-1,0
 * `light <x> <y> <z> <color>`
   * Creates a light at the x y z position with the specified color
   * If no lights are in the scene, then the scene becomes unlit/fullbright

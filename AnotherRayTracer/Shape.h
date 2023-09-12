@@ -6,6 +6,8 @@
 #include "Material.h"
 #include "Light.h"
 
+struct Scene;
+
 struct Shape
 {
     Shape(Color _color = CBlack);
@@ -15,6 +17,6 @@ struct Shape
 
     virtual std::vector<double> Intersects(Ray ray);
     virtual Vector3D GetNormal(Vector3D point);
-    virtual Color GetColor(Vector3D point, std::vector<std::shared_ptr<Light>>& lights);
+    virtual Color GetColor(Vector3D point, Scene* scene);
 };
 

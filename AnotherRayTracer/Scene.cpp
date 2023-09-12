@@ -11,6 +11,19 @@ void Scene::Reset()
     background = CBlack;
 }
 
+void Scene::Intersections(Ray ray, std::map<double, std::shared_ptr<Shape>>& intersections)
+{
+    for (std::shared_ptr<Shape> shape : shapes)
+    {
+        std::vector<double> intersects = shape->Intersects(ray);
+        for (double& intersect : intersects)
+        {
+            if (intersect > ART_THRESHOLD)
+                intersections[intersect] = shape;
+        }
+    }
+}
+
 Color Scene::Trace(unsigned int x, unsigned int y)
 {
     // Remap [0,width] & [0,height] to [-1,+1]
@@ -25,7 +38,7 @@ Color Scene::Trace(unsigned int x, unsigned int y)
         double ratio = width / (double)height;
         vx = vx * ratio;
     }
-    else if( height > width)
+    else if (height > width)
     {
         double ratio = height / (double)width;
         vy = vy * ratio;
@@ -35,14 +48,7 @@ Color Scene::Trace(unsigned int x, unsigned int y)
     Ray ray = Ray(camera.position, r);
 
     std::map<double, std::shared_ptr<Shape>> intersections;
-    for (std::shared_ptr<Shape> shape : shapes)
-    {
-        std::vector<double> intersects = shape->Intersects(ray);
-        for (double& intersect : intersects)
-        {
-            intersections[intersect] = shape;
-        }
-    }
+    Intersections(ray, intersections);
 
     if (intersections.size() == 0)
         return background;
@@ -56,7 +62,7 @@ Color Scene::Trace(unsigned int x, unsigned int y)
 
     std::shared_ptr<Shape> shape = intersected->second;
 
-    Color color = shape->GetColor(point, lights);
+    Color color = shape->GetColor(point, this);
 
     return color;
 }
