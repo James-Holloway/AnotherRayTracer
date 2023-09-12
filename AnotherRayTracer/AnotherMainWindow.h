@@ -41,6 +41,7 @@ protected:
     wxToolBarToolBase* toolSave;
     wxToolBarToolBase* toolSaveAs;
     wxToolBarToolBase* toolStop;
+    wxToolBarToolBase* toolRenderSave;
     wxSplitterWindow* splitter;
     wxSplitterWindow* splitterText;
     wxTextCtrl* sceneTextBox;
@@ -58,12 +59,14 @@ protected:
     void OnPauseRender(wxCommandEvent& event);
     void OnStopRender(wxCommandEvent& event);
     void OnRestartRender(wxCommandEvent& event);
+    void OnSaveRenderAs(wxCommandEvent& event);
 
     void OnSceneTextChanged(wxCommandEvent& event);
     void OnSceneTextKeyDown(wxKeyEvent& event);
 
     void SaveScene();
     void SaveSceneAs();
+    void SaveRenderAs();
 
     void ParseART();
     void RunRender();
@@ -83,6 +86,7 @@ enum {
     ID_RENDER_PAUSE,
     ID_RENDER_STOP,
     ID_RENDER_RESTART,
+    ID_RENDER_SAVE,
 };
 
 namespace wxue_img
@@ -105,6 +109,8 @@ namespace wxue_img
     extern const unsigned char new_file_svg[273];
     // save-as.svg
     extern const unsigned char save_as_svg[332];
-    // save.png
+    // save.svg
     extern const unsigned char save_svg[178];
+    // save-blue.svg
+    extern const unsigned char save_blue_svg[342];
 }

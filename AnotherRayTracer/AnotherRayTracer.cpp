@@ -47,3 +47,13 @@ std::string AnotherRayTracer::Parse(std::string input)
     }
     return out;
 }
+
+int AnotherRayTracer::GetWidth()
+{
+    return scene.width;
+}
+
+int AnotherRayTracer::GetHeight()
+{
+    return scene.height;
+}

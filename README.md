@@ -2,9 +2,12 @@
 
 Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/) following [Dylan Beattie's JavaScript ray tracer workshop](https://ursatile.github.io/jsray/). Uses ART functions to describe what to render
 
+![Example Cornell Box](./Images/cornell%20box.png)
+
 ## ART Functions
 
-* Comments and leading/trailing whitespace are ignored
+* `#`
+  * Comments and leading/trailing whitespace are ignored
   * Comments must be on their own line
   * Example: `# This is a Comment`
 * `color <name> <R> <G> <B>`
@@ -35,6 +38,12 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
 * `bounces <bounces>`
   * Number of light bounces a reflective material will do. Internally clamped between 0 and 100, defaulting to 3
   * Example: `bounces 5`
+* `size <width> <height>`
+  * Sets the output size of the render
+  * If no size is set, the size defaults to the size of the window's image panel
+  * Images larger than the window's image panel get clamped to fit, which may cause stretching
+  * The default size of the image panel is 1600x900
+  * Example: `size 1920 1080`
 
 ## The Code
 

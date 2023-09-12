@@ -12,6 +12,8 @@ public:
     void Reset();
     void PopulateExample();
     std::string Parse(std::string input);
+    int GetWidth();
+    int GetHeight();
 
     static inline char NewScene[] = "# Background\n"
         "color cornflowerblue 100 149 237\n"

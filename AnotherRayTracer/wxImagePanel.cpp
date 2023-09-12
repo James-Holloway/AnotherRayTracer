@@ -70,7 +70,22 @@ void wxImagePanel::Render(wxDC& dc)
     wxBitmap bitmap;
 
     // Should we stretch the image?
-    if (stretch)
+    if (shrinkOnly)
+    {
+        if (panelWidth < 1)
+            panelWidth = 1;
+        if (panelHeight < 1)
+            panelHeight = 1;
+
+        if (img.GetWidth() < panelWidth)
+            panelWidth = img.GetWidth();
+        if (img.GetHeight() < panelHeight)
+            panelHeight = img.GetHeight();
+
+        if (img.IsOk())
+            img.Rescale(panelWidth, panelHeight);
+    }
+    else if (stretch)
     {
         // Make sure we do not attempt to create a bitmap
         // with invalid size (width and/or height < 1)

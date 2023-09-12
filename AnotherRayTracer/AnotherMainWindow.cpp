@@ -46,6 +46,8 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
 
         // toolRestart = toolRestart = toolBar->AddTool(ID_RENDER_RESTART, wxEmptyString, wxueBundleSVG(wxue_img::debug_restart_svg, 291, 557, wxSize(16, 16)), "Restart Render");
 
+        toolRenderSave = toolBar->AddTool(ID_RENDER_SAVE, wxEmptyString, wxueBundleSVG(wxue_img::save_blue_svg, 342, 592, wxSize(16, 16)), "Save Render As...");
+
         toolBar->Realize();
     }
 
@@ -68,6 +70,7 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         // menuRender->Append(ID_RENDER_PAUSE, "&Pause Render");
         menuRender->Append(ID_RENDER_STOP, "&Clear Render");
         // menuRender->Append(ID_RENDER_RESTART, "R&estart Render");
+        menuRender->Append(ID_RENDER_SAVE, "&Save Render As...");
         menuBar->Append(menuRender, "&Render");
 
         SetMenuBar(menuBar);
@@ -95,6 +98,7 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
     // Image
     {
         imagePanel = new wxImagePanel(splitter, wxID_ANY);
+        imagePanel->ShrinkOnly();
     }
 
     splitter->SplitVertically(splitterText, imagePanel, 200);
@@ -113,12 +117,15 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         Bind(wxEVT_MENU, &AnotherMainWindow::OnPauseRender, this, ID_RENDER_PAUSE);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnStopRender, this, ID_RENDER_STOP);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnRestartRender, this, ID_RENDER_RESTART);
+        Bind(wxEVT_MENU, &AnotherMainWindow::OnSaveRenderAs, this, ID_RENDER_SAVE);
 
         sceneTextBox->Bind(wxEVT_TEXT_ENTER, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
         sceneTextBox->Bind(wxEVT_TEXT_PASTE, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
         sceneTextBox->Bind(wxEVT_TEXT_CUT, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
         sceneTextBox->Bind(wxEVT_KEY_DOWN, &AnotherMainWindow::OnSceneTextKeyDown, this, ID_SCENETEXTBOX);
     }
+
+    wxImage::AddHandler(new wxPNGHandler);
 
     anotherRayTracer = std::make_shared<AnotherRayTracer>();
     anotherRayTracer->PopulateExample();
@@ -244,6 +251,12 @@ void AnotherMainWindow::OnRestartRender(wxCommandEvent& event)
     SetStatusText("Render Restarted");
 }
 
+void AnotherMainWindow::OnSaveRenderAs(wxCommandEvent& event)
+{
+    SetStatusText("Saving Render As...");
+    SaveRenderAs();
+}
+
 void AnotherMainWindow::OnSceneTextChanged(wxCommandEvent& event)
 {
     std::string tempFileContents = std::string(sceneTextBox->GetValue());
@@ -307,6 +320,39 @@ void AnotherMainWindow::SaveSceneAs()
     SaveScene();
 }
 
+void AnotherMainWindow::SaveRenderAs()
+{
+    if (imagePanel->IsImageNull())
+    {
+        SetStatusText("Nothing has been rendered, cannot save render as");
+        return;
+    }
+
+    wxImage image = imagePanel->GetImage();
+    if (!image.IsOk())
+    {
+        SetStatusText("Cannot save render - image is not OK");
+        return;
+    }
+
+    wxFileDialog saveFileDialog(this, "Save Render", "", "", "PNG files (*.png)|*.png", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+    if (saveFileDialog.ShowModal() == wxID_CANCEL)
+    {
+        SetStatusText("Cancelled Saving Render As");
+        return;
+    }
+
+    std::string renderPath = std::string(saveFileDialog.GetPath());
+
+    SetStatusText("Saving Render");
+
+    wxBitmap bitmap = wxBitmap(image);
+    bitmap.SaveFile(renderPath, wxBITMAP_TYPE_PNG);
+
+    SetStatusText("Saved Render");
+}
+
 void AnotherMainWindow::ParseART()
 {
     std::string errors = anotherRayTracer->Parse(sceneTextBox->GetValue().ToStdString());
@@ -315,13 +361,13 @@ void AnotherMainWindow::ParseART()
 
 void AnotherMainWindow::RunRender()
 {
-    ParseART();
     wxSize size = imagePanel->GetSize();
     anotherRayTracer->Resize(size.x, size.y);
+    ParseART();
     anotherRayTracer->Render();
 
     imagePanel->SetImage(nullptr);
-    wxImage image = wxImage(size.x, size.y, anotherRayTracer->image.data(), true);
+    wxImage image = wxImage(anotherRayTracer->GetWidth(), anotherRayTracer->GetHeight(), anotherRayTracer->image.data(), true);
     imagePanel->SetImage(image);
 }
 
@@ -409,6 +455,19 @@ namespace wxue_img
         185,190,230,45,40,161,140,66,6,2,116,233,65,11,75,8,69,73,200,8,41,37,50,21,18,111,72,52,4,193,56,88,110,218,195,98,208,140,164,
         0,228,201,2,3,151,138,73,243,63,3,186,22,215,4,166,78,151,98,132,130,18,40,173,7,20,251,3,13,119,144,123,67,233,178,65,7,116,107,
         176,107,237,183,33,237,33,179,17,221,202,118,124,121,125,205,183,26,233,240,162,169,10,250,153,205,7,46,112,68,11
+    };
+    // save-blue.svg
+    const unsigned char save_blue_svg[342]{
+        120,218,93,82,77,115,130,48,16,237,79,201,224,85,99,54,31,124,41,158,57,224,149,3,55,10,177,166,165,192,72,180,245,223,55,11,168,
+        85,24,102,118,223,190,221,236,123,100,59,92,62,118,219,90,31,6,98,234,196,195,32,244,214,187,109,95,218,35,57,152,166,89,157,206,
+        141,78,60,125,209,109,87,215,30,169,26,211,191,98,174,113,15,130,10,37,56,1,10,210,207,64,210,16,51,78,125,204,20,101,140,113,
+        34,114,135,43,44,42,76,65,165,48,70,50,131,145,32,9,150,114,64,206,84,32,144,186,193,88,203,158,14,40,246,124,238,224,110,102,
+        234,218,48,203,5,229,44,204,128,211,32,194,195,83,152,230,230,126,58,17,100,206,211,185,177,216,135,247,9,110,15,54,17,121,58,
+        163,133,55,170,79,188,133,228,248,122,163,61,232,138,11,7,123,69,253,72,136,23,162,140,64,171,205,232,85,215,151,149,177,215,24,
+        238,22,62,81,101,168,149,40,95,168,155,193,158,186,47,29,183,93,171,231,120,245,99,106,123,140,157,7,146,7,162,255,189,193,141,
+        105,117,85,246,241,251,217,218,255,216,103,103,218,248,219,88,125,186,161,143,69,198,159,67,20,245,149,140,66,33,150,1,5,197,34,
+        46,35,146,19,52,42,80,44,144,36,35,206,1,33,21,131,96,25,209,200,249,236,135,138,20,15,213,2,132,112,194,187,218,244,238,115,203,
+        214,218,94,123,61,36,94,229,30,148,187,198,155,244,246,7,90,228,164,87
     };
 }
 #pragma endregion

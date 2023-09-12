@@ -378,6 +378,25 @@ void ARTParser::ParseBounces(std::vector<std::string> line, Scene& scene, Parsed
     scene.maxBounces = std::clamp(bounces, 0, 100);
 }
 
+void ARTParser::ParseSize(std::vector<std::string> line, Scene& scene, ParsedData& data)
+{
+    int width = scene.width, height = scene.height;
+    try
+    {
+        width = std::stoi(line[1]);
+        height = std::stoi(line[2]);
+    }
+    catch (std::exception& e)
+    {
+        std::string err = std::string("Error while parsing size's size: ") + e.what();
+        data.CreateError(err);
+        return;
+    }
+
+    scene.width = std::max(width, 1);
+    scene.height = std::max(height, 1);
+}
+
 void ARTParser::ParseLine(std::string line, Scene& scene, ParsedData& data)
 {
     if (line.length() == 0)
