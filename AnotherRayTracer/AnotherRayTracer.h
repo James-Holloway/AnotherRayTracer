@@ -16,6 +16,7 @@ public:
     static inline char NewScene[] = "# Background\n"
         "color cornflowerblue 100 149 237\n"
         "background cornflowerblue\n"
+        "bounces 3\n"
         "# Camera\n"
         "camera 0 2 -8 0 0 0\n"
         "# Colors & Materials\n"

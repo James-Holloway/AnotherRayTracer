@@ -10,10 +10,10 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
   * Creates a color that can be used by other functions, can only be used after declaration
   * R, G, B can be 0.0-1.0 or 0-255
   * Example: `color cornflowerblue 100 149 237`
-* `material <color> [diffuse] [specular]`
+* `material <color> [diffuse] [specular] [reflective]`
   * `<color>` is the color name
-  * `[diffuse]` and `[specular]` are optional parameters
-  * Example: `color myMaterial cornflowerblue 0.75 0.25`
+  * `[diffuse]`, `[specular]` and `[reflective]` are optional parameters that control the shine and reflectiveness of the material. They default to 0.5, 0.5 & 0.0 respectively
+  * Example: `material myMaterial cornflowerblue 0.75 0.25 0.0` for a slightly specular cornflower blue
 * `background <color>`
   * Sets the background color of the scene
   * Example: `background cornflowerblue`
@@ -31,6 +31,9 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
   * If no lights are in the scene, then the scene becomes unlit/fullbright
   * Note this takes a color, not a material
   * Example: `light 5 10 -5 white`
+* `bounces <bounces>`
+  * Number of light bounces a reflective material will do. Internally clamped between 0 and 100, defaulting to 3
+  * Example: `bounces 5`
 
 ## The Code
 

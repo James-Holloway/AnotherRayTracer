@@ -34,6 +34,7 @@ namespace ARTParser
     void ParseSphere(std::vector<std::string> line, Scene& scene, ParsedData& data);
     void ParseLight(std::vector<std::string> line, Scene& scene, ParsedData& data);
     void ParsePlane(std::vector<std::string> line, Scene& scene, ParsedData& data);
+    void ParseBounces(std::vector<std::string> line, Scene& scene, ParsedData& data);
 
     const inline std::map<std::string, ParseFunction*> ParseFunctions
     {
@@ -44,6 +45,7 @@ namespace ARTParser
         {"sphere", &ParseSphere},
         {"light", &ParseLight},
         {"plane", &ParsePlane},
+        {"bounces", &ParseBounces},
     };
 
     void ParseLine(std::string line, Scene& scene, ParsedData& data);

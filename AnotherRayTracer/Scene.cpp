@@ -9,6 +9,7 @@ void Scene::Reset()
     camera.LookAt(Vector3D(0, 0, -5), Vector3D(0, 0, 0));
     camera.scale = 0.5;
     background = CBlack;
+    maxBounces = 3;
 }
 
 void Scene::Intersections(Ray ray, std::map<double, std::shared_ptr<Shape>>& intersections)
@@ -22,6 +23,31 @@ void Scene::Intersections(Ray ray, std::map<double, std::shared_ptr<Shape>>& int
                 intersections[intersect] = shape;
         }
     }
+}
+
+Color Scene::Trace(Ray ray, unsigned int depth)
+{
+    if (depth > maxBounces)
+        return background;
+
+    std::map<double, std::shared_ptr<Shape>> intersections;
+    Intersections(ray, intersections);
+
+    if (intersections.size() == 0)
+        return background;
+
+    // Get first intersection
+    auto intersected = intersections.begin();
+
+    double distance = intersected->first;
+
+    Vector3D point = ray.GetPointFromDistance(distance);
+
+    std::shared_ptr<Shape> shape = intersected->second;
+
+    Color color = shape->GetColor(point, ray, this, depth);
+
+    return color;
 }
 
 Color Scene::Trace(unsigned int x, unsigned int y)
@@ -47,24 +73,7 @@ Color Scene::Trace(unsigned int x, unsigned int y)
     Vector3D r = camera.forward + vx + vy;
     Ray ray = Ray(camera.position, r);
 
-    std::map<double, std::shared_ptr<Shape>> intersections;
-    Intersections(ray, intersections);
-
-    if (intersections.size() == 0)
-        return background;
-
-    // Get first intersection
-    auto intersected = intersections.begin();
-
-    double distance = intersected->first;
-
-    Vector3D point = ray.GetPointFromDistance(distance);
-
-    std::shared_ptr<Shape> shape = intersected->second;
-
-    Color color = shape->GetColor(point, ray, this);
-
-    return color;
+    return Trace(ray);
 }
 
 void Scene::TraceBatch(std::vector<unsigned char>* image, unsigned int offset, unsigned int batchSize)

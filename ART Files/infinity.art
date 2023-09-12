@@ -1,0 +1,35 @@
+# Background
+color black 0 0 0
+background black
+bounces 10
+
+# Camera
+camera 0 2 -5 0 0 0
+
+# Colors
+color white 255 255 255
+color red 255 0 0
+color green 0 255 0
+color blue 0 0 255
+
+# Materials
+material red red 0.5 0.5 0.5
+material green green 0.5 0.5 0.5
+material blue blue 0.5 0.5 0.5
+material reflect white 0 0 1
+
+# Spheres
+sphere -2 0 2 1.0 red
+sphere 0 0 0 1.0 green
+sphere 2 0 2 1.0 blue
+
+# Planes
+plane 0 0 -1 -5 reflect
+plane 0 0 1 -5 reflect
+plane 1 0 0 -5 reflect
+plane -1 0 0 -5 reflect
+plane 0 1 0 -5 reflect
+plane 0 -1 0 -5 reflect
+
+# Lights
+light 5 10 -5 white

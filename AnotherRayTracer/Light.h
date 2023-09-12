@@ -4,6 +4,7 @@
 #include "Vector3D.h"
 #include "Material.h"
 #include "Color.h"
+#include "Ray.h"
 
 struct Light
 {
@@ -12,6 +13,6 @@ struct Light
     Vector3D position;
     Color color;
 
-    Color Illuminate(Material material, Vector3D point, double brightness, Vector3D normal, Vector3D viewDir);
+    Color Illuminate(Material material, Vector3D point, double brightness, Vector3D normal, Ray ray);
 };
 

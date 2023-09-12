@@ -135,7 +135,7 @@ void ARTParser::ParseColor(std::vector<std::string> line, Scene& scene, ParsedDa
     data.colors[name] = Color(r, g, b);
 }
 
-// material name color [diffuse] [specular]
+// material name color [diffuse] [specular] [reflective]
 void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, ParsedData& data)
 {
     if (line.size() < 3)
@@ -147,9 +147,9 @@ void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, Parse
     std::string name = line[1];
     std::string colorName = line[2];
 
-    double diffuse = 0.5, specular = 0.5;
+    double diffuse = 0.5, specular = 0.5, reflective = 0.0;
 
-    if (line.size() > 4)
+    if (line.size() > 3)
     {
         try
         {
@@ -162,7 +162,7 @@ void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, Parse
             return;
         }
 
-        if (line.size() > 5)
+        if (line.size() > 4)
         {
             try
             {
@@ -174,13 +174,27 @@ void ARTParser::ParseMaterial(std::vector<std::string> line, Scene& scene, Parse
                 data.CreateError(err);
                 return;
             }
+
+            if (line.size() > 5)
+            {
+                try
+                {
+                    reflective = std::stod(line[5]);
+                }
+                catch (std::exception& e)
+                {
+                    std::string err = std::string("Error while parsing material's reflective: ") + e.what();
+                    data.CreateError(err);
+                    return;
+                }
+            }
         }
     }
 
     auto colorIter = data.colors.find(colorName);
     if (colorIter != data.colors.end())
     {
-        data.materials[name] = Material(colorIter->second, diffuse, specular);
+        data.materials[name] = Material(colorIter->second, diffuse, specular, reflective);
     }
     else
     {
@@ -346,6 +360,22 @@ void ARTParser::ParsePlane(std::vector<std::string> line, Scene& scene, ParsedDa
         std::string err = std::string("Could not find existing material of name: ") + matName;
         data.CreateError(err);
     }
+}
+
+void ARTParser::ParseBounces(std::vector<std::string> line, Scene& scene, ParsedData& data)
+{
+    int bounces = 3;
+    try
+    {
+       bounces = std::stoi(line[1]);
+    }
+    catch (std::exception& e)
+    {
+        std::string err = std::string("Error while parsing bounce's bounces: ") + e.what();
+        data.CreateError(err);
+        return;
+    }
+    scene.maxBounces = std::clamp(bounces, 0, 100);
 }
 
 void ARTParser::ParseLine(std::string line, Scene& scene, ParsedData& data)
