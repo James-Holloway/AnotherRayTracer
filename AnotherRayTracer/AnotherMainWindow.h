@@ -1,11 +1,14 @@
 #pragma once
 
+#include <filesystem>
 #include <wx/bitmap.h>
+#include <wx/filedlg.h>
 #include <wx/frame.h>
 #include <wx/gdicmn.h>
 #include <wx/icon.h>
 #include <wx/image.h>
 #include <wx/menu.h>
+#include <wx/msgdlg.h>
 #include <wx/splitter.h>
 #include <wx/statusbr.h>
 #include <wx/textctrl.h>
@@ -56,14 +59,24 @@ protected:
     void OnStopRender(wxCommandEvent& event);
     void OnRestartRender(wxCommandEvent& event);
 
+    void OnSceneTextChanged(wxCommandEvent& event);
+    void OnSceneTextKeyDown(wxKeyEvent& event);
+
+    void SaveScene();
+    void SaveSceneAs();
+
     void ParseART();
     void RunRender();
 
 protected:
     std::shared_ptr<AnotherRayTracer> anotherRayTracer;
+    std::string filePath;
+    bool fileSaved = true;
+    std::string prevFileContents;
 };
 
 enum {
+    ID_SCENETEXTBOX,
     ID_LOAD,
     ID_VALIDATE,
     ID_RENDER_START,

@@ -1,6 +1,7 @@
 #include "anothermainwindow.h"
 #include <wx/mstream.h>  // memory stream classes
 #include <wx/zstream.h>  // zlib stream classes
+#include <wx/wfstream.h> // File stream classes
 #include <memory>
 
 // Convert compressed SVG string into a wxBitmapBundle
@@ -39,12 +40,11 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         // Render operations
         toolRun = toolBar->AddTool(ID_RENDER_START, wxEmptyString, wxueBundleSVG(wxue_img::debug_start_svg, 104, 130, wxSize(16, 16)), "Run Render");
 
-        toolPause = toolBar->AddTool(ID_RENDER_PAUSE, wxEmptyString, wxueBundleSVG(wxue_img::debug_pause_svg, 96, 153, wxSize(16, 16)), "Pause Render");
+        // toolPause = toolBar->AddTool(ID_RENDER_PAUSE, wxEmptyString, wxueBundleSVG(wxue_img::debug_pause_svg, 96, 153, wxSize(16, 16)), "Pause Render");
 
-        toolStop = toolBar->AddTool(ID_RENDER_STOP, wxEmptyString, wxueBundleSVG(wxue_img::debug_stop_svg, 95, 113, wxSize(16, 16)), "Stop Render");
+        toolStop = toolBar->AddTool(ID_RENDER_STOP, wxEmptyString, wxueBundleSVG(wxue_img::debug_stop_svg, 95, 113, wxSize(16, 16)), "Clear Render");
 
-        toolRestart = toolRestart = toolBar->AddTool(ID_RENDER_RESTART, wxEmptyString, wxueBundleSVG(wxue_img::debug_restart_svg, 291, 557, wxSize(16, 16)), "Restart Render");
-        toolRestart->Enable(false);
+        // toolRestart = toolRestart = toolBar->AddTool(ID_RENDER_RESTART, wxEmptyString, wxueBundleSVG(wxue_img::debug_restart_svg, 291, 557, wxSize(16, 16)), "Restart Render");
 
         toolBar->Realize();
     }
@@ -65,9 +65,9 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
 
         wxMenu* menuRender = new wxMenu();
         menuRender->Append(ID_RENDER_START, "&Run Render");
-        menuRender->Append(ID_RENDER_PAUSE, "&Pause Render");
-        menuRender->Append(ID_RENDER_STOP, "&Stop Render");
-        menuRender->Append(ID_RENDER_RESTART, "R&estart Render");
+        // menuRender->Append(ID_RENDER_PAUSE, "&Pause Render");
+        menuRender->Append(ID_RENDER_STOP, "&Clear Render");
+        // menuRender->Append(ID_RENDER_RESTART, "R&estart Render");
         menuBar->Append(menuRender, "&Render");
 
         SetMenuBar(menuBar);
@@ -86,7 +86,7 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         splitterText->SetSashGravity(1.0);
         splitterText->SetMinimumPaneSize(150);
 
-        sceneTextBox = new wxTextCtrl(splitterText, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+        sceneTextBox = new wxTextCtrl(splitterText, ID_SCENETEXTBOX, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
         sceneErrors = new wxTextCtrl(splitterText, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
         sceneErrors->Disable();
 
@@ -113,6 +113,11 @@ bool AnotherMainWindow::Create(wxWindow* parent, wxWindowID id, const wxString& 
         Bind(wxEVT_MENU, &AnotherMainWindow::OnPauseRender, this, ID_RENDER_PAUSE);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnStopRender, this, ID_RENDER_STOP);
         Bind(wxEVT_MENU, &AnotherMainWindow::OnRestartRender, this, ID_RENDER_RESTART);
+
+        sceneTextBox->Bind(wxEVT_TEXT_ENTER, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
+        sceneTextBox->Bind(wxEVT_TEXT_PASTE, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
+        sceneTextBox->Bind(wxEVT_TEXT_CUT, &AnotherMainWindow::OnSceneTextChanged, this, ID_SCENETEXTBOX);
+        sceneTextBox->Bind(wxEVT_KEY_DOWN, &AnotherMainWindow::OnSceneTextKeyDown, this, ID_SCENETEXTBOX);
     }
 
     anotherRayTracer = std::make_shared<AnotherRayTracer>();
@@ -131,21 +136,80 @@ void AnotherMainWindow::OnNewScene(wxCommandEvent& event)
     SetStatusText("Created New Scene");
     sceneTextBox->SetValue(wxString(AnotherRayTracer::NewScene));
     sceneErrors->SetValue("New Scene created. Press Validate or Run to check for errors");
+    fileSaved = false;
+    filePath = "";
 }
 
 void AnotherMainWindow::OnLoadScene(wxCommandEvent& event)
 {
-    SetStatusText("Loading New Scene");
+    if (!fileSaved)
+    {
+        if (wxMessageBox("File has not been saved. Do you wish to proceed anyway?", "ART file not saved", wxICON_QUESTION | wxYES_NO, this) == wxNO)
+        {
+            return;
+        }
+    }
+
+    SetStatusText("Loading Scene");
+    wxFileDialog openFileDialog(this, "Open ART file", "", "", "ART files (*.art)|*.art", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (openFileDialog.ShowModal() == wxID_CANCEL)
+    {
+        SetStatusText("Cancelled Loading Scene");
+        return;
+    }
+    std::string tempPath = std::string(openFileDialog.GetPath());
+
+    if (!std::filesystem::exists(tempPath))
+    {
+        SetStatusText("Could not open file '" + tempPath + "' - File does not exist");
+        return;
+    }
+
+
+    wxFileInputStream stream(tempPath);
+
+    if (!stream.IsOk())
+    {
+        SetStatusText("Could not open file '" + tempPath + "'");
+        return;
+    }
+
+    wxString content;
+    char* buffer = new char[1024];
+    do
+    {
+        stream.Read(buffer, 1024 * sizeof(char));
+        content.Append(buffer, 1024);
+    } while (stream.LastRead() > 0);
+
+    delete[] buffer;
+
+    sceneTextBox->SetValue(content);
+    sceneErrors->SetValue("New Scene loaded. Press Validate or Run to check for errors");
+
+    prevFileContents = content;
+    filePath = tempPath;
+    fileSaved = true;
+
 }
 
 void AnotherMainWindow::OnSaveScene(wxCommandEvent& event)
 {
-    SetStatusText("Scene Saved");
+    if (filePath == "")
+    {
+        OnSaveSceneAs(event);
+        return;
+    }
+
+    SetStatusText("Saving Scene");
+
+    SaveScene();
 }
 
 void AnotherMainWindow::OnSaveSceneAs(wxCommandEvent& event)
 {
     SetStatusText("Scene Saved As");
+    SaveSceneAs();
 }
 
 void AnotherMainWindow::OnValidate(wxCommandEvent& event)
@@ -158,6 +222,7 @@ void AnotherMainWindow::OnRunRender(wxCommandEvent& event)
 {
     SetStatusText("Render Running");
     RunRender();
+    SetStatusText("Render Rendered");
 }
 
 void AnotherMainWindow::OnPauseRender(wxCommandEvent& event)
@@ -167,7 +232,7 @@ void AnotherMainWindow::OnPauseRender(wxCommandEvent& event)
 
 void AnotherMainWindow::OnStopRender(wxCommandEvent& event)
 {
-    SetStatusText("Render Stopped");
+    SetStatusText("Render Cleared");
     imagePanel->SetImage(nullptr);
     imagePanel->PaintNow();
     imagePanel->Refresh();
@@ -177,6 +242,69 @@ void AnotherMainWindow::OnStopRender(wxCommandEvent& event)
 void AnotherMainWindow::OnRestartRender(wxCommandEvent& event)
 {
     SetStatusText("Render Restarted");
+}
+
+void AnotherMainWindow::OnSceneTextChanged(wxCommandEvent& event)
+{
+    std::string tempFileContents = std::string(sceneTextBox->GetValue());
+    if (prevFileContents != tempFileContents)
+    {
+        fileSaved = false;
+    }
+
+    prevFileContents = tempFileContents;
+    event.Skip();
+}
+
+void AnotherMainWindow::OnSceneTextKeyDown(wxKeyEvent& event)
+{
+    if (event.ControlDown() && (event.GetKeyCode() == (int)'s' || event.GetKeyCode() == (int)'S'))
+    {
+        if (filePath == "" || event.ShiftDown())
+        {
+            SaveSceneAs();
+            return;
+        }
+        SetStatusText("Saving Scene");
+        SaveScene();
+        return;
+    }
+    event.Skip();
+}
+
+void AnotherMainWindow::SaveScene()
+{
+    wxFileOutputStream stream(filePath);
+
+    if (!stream.IsOk())
+    {
+        SetStatusText("Could not open file '" + filePath + "' for saving");
+        return;
+    }
+
+    wxString content = sceneTextBox->GetValue();
+    const char* contentChar = content.c_str().AsChar();
+    stream.WriteAll(contentChar, content.size());
+    stream.Close();
+
+    fileSaved = true;
+}
+
+void AnotherMainWindow::SaveSceneAs()
+{
+    wxFileDialog saveFileDialog(this, "Save ART file", "", "", "ART files (*.art)|*.art", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+    if (saveFileDialog.ShowModal() == wxID_CANCEL)
+    {
+        SetStatusText("Cancelled Saving Scene As");
+        return;
+    }
+
+    filePath = saveFileDialog.GetPath();
+
+    SetStatusText("Saving Scene");
+
+    SaveScene();
 }
 
 void AnotherMainWindow::ParseART()

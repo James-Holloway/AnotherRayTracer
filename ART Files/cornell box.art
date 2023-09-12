@@ -1,0 +1,33 @@
+# Scene
+color cornflowerblue 100 149 237
+background cornflowerblue
+camera 0 1 -4.95 0 0 0
+bounces 3
+
+# Colors
+color white 255 255 255
+color red 255 0 0
+color green 0 255 0
+
+# Materials
+material white white 1.0 0 0.05
+material red red 1.0 0 0.05
+material green green 1.0 0 0.05
+
+# Spheres
+sphere -3 -3.75 2.5 1 green
+sphere 3 -3.75 2.5 1 red
+
+# Planes
+# front/behind
+plane 0 0 -1 -5 white
+# plane 0 0 1 -5 white
+# sides
+plane 1 0 0 -5 red
+plane -1 0 0 -5 green
+# top/bottom
+plane 0 1 0 -5 white
+plane 0 -1 0 -5.01 white
+
+# Lights
+light 0 5 0 white

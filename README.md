@@ -5,6 +5,7 @@ Just another offline CPU ray tracer using [wxWidgets](https://www.wxwidgets.org/
 ## ART Functions
 
 * Comments and leading/trailing whitespace are ignored
+  * Comments must be on their own line
   * Example: `# This is a Comment`
 * `color <name> <R> <G> <B>`
   * Creates a color that can be used by other functions, can only be used after declaration
